@@ -25,9 +25,9 @@ RUN apt update \
 
 COPY ./backend/pyproject.toml ${APP_HOME}/
 
-COPY ./backend/docker/django/entrypoint ${APP_HOME}/docker/django/entrypoint
+COPY ./docker/django/entrypoint ${APP_HOME}/docker/django/entrypoint
 
-COPY ./backend/docker/django/start_dev ${APP_HOME}/docker/django/start_dev
+COPY ./docker/django/start_dev ${APP_HOME}/docker/django/start_dev
 RUN sed -i 's/\r$//g' ${APP_HOME}/docker/django/start_dev
 RUN chmod +x ${APP_HOME}/docker/django/start_dev
 
