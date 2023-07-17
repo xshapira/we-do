@@ -8,8 +8,8 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.11"
 django = "^4.2.3"
-pydantic = {extras = ["dotenv"], version = "^2.0.2"}
 psycopg = {extras = ["binary"], version = "^3.1.9"}
+starlette = "^0.30.0"
 
 [tool.poetry.group.dev.dependencies]
 black = {version = "^23.7.0", allow-prereleases = true}
