@@ -1,0 +1,36 @@
+FROM python:3.11-slim-bookworm
+
+ARG APP_HOME=/usr/src/app
+WORKDIR ${APP_HOME}
+
+ARG POETRY_HOME=/usr/local/poetry
+
+ENV PYTHONDONTWRITEBYTECODE 1 \
+  PYTHONUNBUFFERED 1 \
+  POETRY_HOME=${POETRY_HOME} \
+  PYTHONPATH=${PYTHONPATH}:${PWD}
+
+ENV PATH="$POETRY_HOME/bin:$PATH"
+
+RUN apt update \
+  && apt install -y curl git libpq-dev gcc libglu1\
+  && curl -sL https://deb.nodesource.com/setup_lts.x | bash - \
+  && pip install --upgrade pip psycopg psycopg-binary \
+  # cleaning up unused files
+  && apt purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+  && rm -rf /var/lib/apt/lists/* \
+  && curl -sSL https://install.python-poetry.org | POETRY_HOME=/usr/local/poetry python3 - \
+  && poetry config virtualenvs.create false \
+  && poetry install
+
+COPY ./backend/pyproject.toml ${APP_HOME}/
+
+COPY ./backend/docker/django/entrypoint ${APP_HOME}/docker/django/entrypoint
+
+COPY ./backend/docker/django/start_dev ${APP_HOME}/docker/django/start_dev
+RUN sed -i 's/\r$//g' ${APP_HOME}/docker/django/start_dev
+RUN chmod +x ${APP_HOME}/docker/django/start_dev
+
+COPY . ${APP_HOME}/
+
+ENTRYPOINT ["/usr/src/app/docker/django/entrypoint"]

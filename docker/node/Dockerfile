@@ -1,4 +1,3 @@
-# Base image
 FROM node:18.16-buster-slim
 
 # Install npm, gulp, pnpm
