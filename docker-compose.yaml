@@ -42,7 +42,7 @@ services:
     image: wedo-fronend
     volumes:
       - ./frontend/:/usr/src/app/
-      - notused:/usr/src/app/node_modules/
+      # - notused:/usr/src/app/node_modules/
     command: bash -c "rm -rf /usr/src/app/node_modules/* && pnpm run dev"
     ports:
       - '4200:4200'
