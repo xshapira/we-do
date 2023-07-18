@@ -13,33 +13,26 @@ ENV PYTHONDONTWRITEBYTECODE 1 \
 ENV PATH="$POETRY_HOME/bin:$PATH"
 
 RUN apt update \
-  && apt install -y curl \
-  && apt install -y git \
+  && apt install -y curl git libpq-dev gcc libglu1 \
   && curl -sL https://deb.nodesource.com/setup_lts.x | bash - \
-  && apt-get -y install libpq-dev gcc \
   && pip install --upgrade pip \
-  && pip install psycopg \
-  && pip install psycopg-binary \
+  && pip install psycopg psycopg-binary \
+  && curl -sSL https://install.python-poetry.org | POETRY_HOME=/usr/local/poetry python3 - \
   # cleaning up unused files
   && apt purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
 
-RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/usr/local/poetry python3 -
+COPY ./backend/pyproject.toml ${APP_HOME}/
 
-COPY ./backend/pyproject.toml ${APP_HOME}
-
-RUN poetry config virtualenvs.create false
-
-RUN poetry install
-
-RUN apt-get update && apt-get install -y libglu1
-
-COPY . ${APP_HOME}
+RUN poetry config virtualenvs.create false \
+  && poetry install
 
 COPY ./docker/django/entrypoint ${APP_HOME}/docker/django/entrypoint
-
 COPY ./docker/django/start_dev ${APP_HOME}/docker/django/start_dev
-RUN sed -i 's/\r$//g' ${APP_HOME}/docker/django/start_dev
-RUN chmod +x ${APP_HOME}/docker/django/start_dev
+
+RUN sed -i 's/\r$//g' ${APP_HOME}/docker/django/start_dev \
+  && chmod +x ${APP_HOME}/docker/django/start_dev
+
+COPY . ${APP_HOME}/
 
 ENTRYPOINT ["/usr/src/app/docker/django/entrypoint"]
