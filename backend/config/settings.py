@@ -131,7 +131,7 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATIC_ROOT = str(ROOT_DIR("staticfiles"))
 STATICFILES_DIRS = [
-    str(BASE_DIR.path("frontend", "build", "dist")),
+    str(BASE_DIR.path("frontend", "dist", "assets")),
 ]
 
 
