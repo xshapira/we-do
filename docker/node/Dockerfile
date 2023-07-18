@@ -21,7 +21,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /usr/src
 
 # Copy package files
-COPY ./app/package.json ./app/pnpm-lock.yaml ./
+COPY ./frontend/package.json ./frontend/pnpm-lock.yaml ./
 
 # Install project dependencies
 RUN pnpm install --frozen-lockfile
