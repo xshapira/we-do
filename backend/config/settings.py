@@ -149,6 +149,9 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Django Admin URL
 ADMIN_URL = "admin/"
+# https://docs.djangoproject.com/en/dev/ref/settings/#admins
+ADMINS = [("""Admin""", "admin@example.com")]
+
 
 # SECURITY
 # ------------------------------------------------------------------------------
