@@ -11,8 +11,8 @@ services:
       dockerfile: ./docker/postgres/Dockerfile
     image: wedo-app-postgres-data
     volumes:
-      - postgres-data:/var/lib/postgresql/data:Z
-      - postgres-data-backups:/backups:z
+      - postgres-data:/var/lib/postgresql/data
+      - postgres-data-backups:/backups
     env_file:
       - ./.env
     restart: unless-stopped
@@ -23,7 +23,8 @@ services:
       dockerfile: ./docker/django/Dockerfile
     image: wedo-backend
     volumes:
-      - ./backend/:/usr/src/app/
+      - ./backend/:/usr/src/app/backend
+      - ./docker/:/usr/src/app/docker
     command: /usr/src/app/docker/django/start_dev
     ports:
       - 8000:8000
@@ -41,8 +42,8 @@ services:
       - django
     image: wedo-fronend
     volumes:
-      - ./frontend/:/usr/src/app/
+      - ./frontend/:/usr/src/app/frontend
       # - notused:/usr/src/app/node_modules/
-    command: bash -c "rm -rf /usr/src/app/node_modules/* && pnpm run dev"
+    command: bash -c "rm -rf /usr/src/app/frontend/node_modules/* && pnpm start"
     ports:
       - '4200:4200'
