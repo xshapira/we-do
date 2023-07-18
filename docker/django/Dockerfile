@@ -1,6 +1,6 @@
 FROM python:3.11-slim-bookworm
 
-ARG APP_HOME=/usr/src/app
+ARG APP_HOME=/usr/src/app/backend
 WORKDIR ${APP_HOME}
 
 ARG POETRY_HOME=/usr/local/poetry
@@ -18,15 +18,15 @@ RUN apt update \
   && curl -sL https://deb.nodesource.com/setup_lts.x | bash - \
   && apt-get -y install libpq-dev gcc \
   && pip install --upgrade pip \
-  && pip install psycopg2 \
-  && pip install psycopg2-binary \
+  && pip install psycopg \
+  && pip install psycopg-binary \
   # cleaning up unused files
   && apt purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
   && rm -rf /var/lib/apt/lists/*
 
 RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/usr/local/poetry python3 -
 
-COPY ./backend/pyproject.toml ${APP_HOME}/
+COPY ./backend/pyproject.toml ${APP_HOME}
 
 RUN poetry config virtualenvs.create false
 
@@ -34,12 +34,12 @@ RUN poetry install
 
 RUN apt-get update && apt-get install -y libglu1
 
+COPY . ${APP_HOME}
+
 COPY ./docker/django/entrypoint ${APP_HOME}/docker/django/entrypoint
 
 COPY ./docker/django/start_dev ${APP_HOME}/docker/django/start_dev
 RUN sed -i 's/\r$//g' ${APP_HOME}/docker/django/start_dev
 RUN chmod +x ${APP_HOME}/docker/django/start_dev
-
-COPY . ${APP_HOME}/
 
 ENTRYPOINT ["/usr/src/app/docker/django/entrypoint"]
