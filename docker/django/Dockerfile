@@ -13,17 +13,26 @@ ENV PYTHONDONTWRITEBYTECODE 1 \
 ENV PATH="$POETRY_HOME/bin:$PATH"
 
 RUN apt update \
-  && apt install -y curl git libpq-dev gcc libglu1\
+  && apt install -y curl \
+  && apt install -y git \
   && curl -sL https://deb.nodesource.com/setup_lts.x | bash - \
-  && pip install --upgrade pip psycopg psycopg-binary \
+  && apt-get -y install libpq-dev gcc \
+  && pip install --upgrade pip \
+  && pip install psycopg2 \
+  && pip install psycopg2-binary \
   # cleaning up unused files
   && apt purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
-  && rm -rf /var/lib/apt/lists/* \
-  && curl -sSL https://install.python-poetry.org | POETRY_HOME=/usr/local/poetry python3 - \
-  && poetry config virtualenvs.create false \
-  && poetry install
+  && rm -rf /var/lib/apt/lists/*
+
+RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/usr/local/poetry python3 -
 
 COPY ./backend/pyproject.toml ${APP_HOME}/
+
+RUN poetry config virtualenvs.create false
+
+RUN poetry install
+
+RUN apt-get update && apt-get install -y libglu1
 
 COPY ./docker/django/entrypoint ${APP_HOME}/docker/django/entrypoint
 
