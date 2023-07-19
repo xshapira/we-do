@@ -15,7 +15,9 @@ WORKDIR ${APP_HOME}
 COPY ./frontend/package.json ./frontend/pnpm-lock.yaml ${APP_HOME}
 
 # Install project dependencies
-RUN pnpm install --frozen-lockfile
+# RUN pnpm install --frozen-lockfile
+RUN rm -rf /usr/src/app/frontend/node_modules/* \
+  && pnpm install
 
 # Set PATH to include node_modules bin directory
 ENV PATH ${APP_HOME}/node_modules/.bin/:$PATH
@@ -23,4 +25,6 @@ ENV PATH ${APP_HOME}/node_modules/.bin/:$PATH
 # Copy all other project files
 COPY ./frontend/ ${APP_HOME}/
 
-# CMD ["pnpm", "start"]
+EXPOSE 3000
+
+CMD ["sh", "-c", "pnpm build && pnpm start"]
