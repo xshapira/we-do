@@ -61,12 +61,18 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = "config.urls"
 
+TEMPLATES_DIR = str(BASE_DIR.parent / "frontend" / ".next" / "server")
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [TEMPLATES_DIR],
         "APP_DIRS": True,
         "OPTIONS": {
+            "loaders": [
+                "django.template.loaders.filesystem.Loader",
+                "django.template.loaders.app_directories.Loader",
+            ],
             "context_processors": [
                 "django.template.context_processors.debug",
                 "django.template.context_processors.request",
