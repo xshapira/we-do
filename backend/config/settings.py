@@ -137,7 +137,7 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 STATIC_ROOT = str(BASE_DIR / "staticfiles")
-STATICFILES_DIRS = [str(BASE_DIR.parent / "frontend" / "dist" / "assets")]
+STATICFILES_DIRS = [str(BASE_DIR.parent / "frontend" / ".next" / "static")]
 
 
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
