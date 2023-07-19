@@ -44,6 +44,6 @@ services:
     volumes:
       - ./frontend/:/usr/src/app/frontend
       # - notused:/usr/src/app/node_modules/
-    command: bash -c "rm -rf /usr/src/app/frontend/node_modules/* && pnpm start"
+    # command: bash -c "rm -rf /usr/src/app/frontend/node_modules/* && pnpm start"
     ports:
-      - '4200:4200'
+      - '3000:3000'
