@@ -1,12 +1,29 @@
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from "react-beautiful-dnd";
 import * as React from "react";
-
 import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { Filter, ITodo, absurd } from "../types/todo";
-
 import { Container } from "@mui/material";
 import { TodoItem } from "./TodoItem";
 import { styled } from "styled-components";
 import { useTodos } from "../hooks/useTodos";
+
+// Helper function to reorder todo items
+const reorder = (
+  list: ITodo[],
+  startIndex: number,
+  endIndex: number
+): ITodo[] => {
+  const result = Array.from(list);
+  const [removed] = result.splice(startIndex, 1);
+  result.splice(endIndex, 0, removed);
+
+  return result;
+};
 
 export const TodoList: FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
@@ -16,12 +33,14 @@ export const TodoList: FC = () => {
 
   const {
     todos,
+    // <-- ensure you have a function to update todos state
     addTodo,
     toggleTodo,
     editTodo,
     removeTodo,
     removeCompleted,
     getItemsLeft,
+    updateTodos,
   } = useTodos();
 
   const itemsLeft = getItemsLeft();
@@ -58,6 +77,19 @@ export const TodoList: FC = () => {
     [todos, filter]
   );
 
+  // Handler function for when the dragging ends
+  const onDragEnd = (result: DropResult) => {
+    // If dropped outside the list, do nothing
+    if (!result.destination) {
+      return;
+    }
+
+    const items = reorder(todos, result.source.index, result.destination.index);
+
+    // Set the new todo state
+    updateTodos(items);
+  };
+
   const filterButtons = Object.values(Filter).map((f) => (
     <FilterButton
       key={f}
@@ -73,40 +105,64 @@ export const TodoList: FC = () => {
   }, []);
 
   return (
-    <TodoListContainer sx={{ display: "flex" }} maxWidth="sm">
-      <Input
-        placeholder="Write your important tasks here..."
-        value={value}
-        onKeyDown={handleKeyDown}
-        onChange={handleChange}
-        ref={inputRef}
-      />
-
-      {filteredTodos &&
-        filteredTodos.map((todo: ITodo) => (
-          <TodoItem
-            toggleTodo={toggleTodo}
-            editTodo={editTodo}
-            removeTodo={removeTodo}
-            key={todo.id}
-            id={todo.id}
-            name={todo.name}
-            completed={todo.completed}
-          />
-        ))}
-
-      <TodoFooter>
-        <ItemsLeft>{itemsLeft} item(s) left</ItemsLeft>
-        <FilterButtons>{filterButtons}</FilterButtons>
-        <ClearButton
-          $isActive={false}
-          $isVisible={filter === Filter.active ? false : true}
-          onClick={removeCompleted}
-        >
-          Clear Completed
-        </ClearButton>
-      </TodoFooter>
-    </TodoListContainer>
+    <DragDropContext onDragEnd={onDragEnd}>
+      <Droppable droppableId="droppable">
+        {(provided) => (
+          <TodoListContainer
+            {...provided.droppableProps}
+            ref={provided.innerRef}
+            sx={{ display: "flex" }}
+            maxWidth="sm"
+          >
+            <Input
+              placeholder="What needs to be done?"
+              value={value}
+              onKeyDown={handleKeyDown}
+              onChange={handleChange}
+              ref={inputRef}
+            />
+            {filteredTodos &&
+              filteredTodos.map((todo: ITodo, index: number) => (
+                <Draggable
+                  key={todo.id}
+                  draggableId={todo.id.toString()}
+                  index={index}
+                >
+                  {(provided) => (
+                    <div
+                      ref={provided.innerRef}
+                      {...provided.draggableProps}
+                      {...provided.dragHandleProps}
+                    >
+                      <TodoItem
+                        toggleTodo={toggleTodo}
+                        editTodo={editTodo}
+                        removeTodo={removeTodo}
+                        key={todo.id}
+                        id={todo.id}
+                        name={todo.name}
+                        completed={todo.completed}
+                      />
+                    </div>
+                  )}
+                </Draggable>
+              ))}
+            {provided.placeholder}
+            <TodoFooter>
+              <ItemsLeft>{itemsLeft} item(s) left</ItemsLeft>
+              <FilterButtons>{filterButtons}</FilterButtons>
+              <ClearButton
+                $isActive={false}
+                $isVisible={filter === Filter.active ? false : true}
+                onClick={removeCompleted}
+              >
+                Clear Completed
+              </ClearButton>
+            </TodoFooter>
+          </TodoListContainer>
+        )}
+      </Droppable>
+    </DragDropContext>
   );
 };
 

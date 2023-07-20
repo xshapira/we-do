@@ -62,6 +62,10 @@ export const useTodos = () => {
     );
   };
 
+  const updateTodos = (newTodos: ITodo[]): void => {
+    setTodos(newTodos);
+  };
+
   return {
     todos,
     addTodo,
@@ -70,5 +74,6 @@ export const useTodos = () => {
     removeTodo,
     getItemsLeft,
     removeCompleted,
+    updateTodos,
   };
 };
