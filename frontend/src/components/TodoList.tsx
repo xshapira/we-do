@@ -85,7 +85,11 @@ export const TodoList: FC = () => {
       return;
     }
 
-    const items = reorder(todos, result.source.index, result.destination.index);
+    const items = reorder(
+      filteredTodos,
+      result.source.index,
+      result.destination.index
+    );
 
     // Set the new todo state
     updateTodos(items);
@@ -149,7 +153,7 @@ export const TodoList: FC = () => {
                         removeTodo={removeTodo}
                         key={todo.id}
                         id={todo.id}
-                        name={todo.name}
+                        title={todo.title} // Use `title` instead of `name`
                         completed={todo.completed}
                       />
                     </div>
