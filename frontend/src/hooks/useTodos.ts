@@ -5,7 +5,7 @@ export const useTodos = () => {
   const [todos, setTodos] = useState<ITodo[]>([]);
   const [hasChanges, setHasChanges] = useState(false);
   const [csrfToken, setCsrfToken] = useState<string | null>(null);
-  const [previousTodos, setPreviousTodos] = useState<ITodo[][]>([]);
+  const [, setPreviousTodos] = useState<ITodo[][]>([]);
 
   const fetchCsrfToken = async () => {
     try {
@@ -35,11 +35,9 @@ export const useTodos = () => {
         }));
 
         setTodos(mappedTodos);
-        setHasChanges(false);
 
-        // Save the previous todos state
-        // Save the previous todos state
-        setPreviousTodos((prevTodos) => [...prevTodos, mappedTodos]);
+        // Save the initial state from the database as the "previousTodos" state
+        setPreviousTodos((previous) => [...previous, mappedTodos]);
       } else {
         throw new Error("Failed to fetch todos");
       }
@@ -109,13 +107,22 @@ export const useTodos = () => {
   };
 
   const undoChanges = () => {
-    if (previousTodos.length > 1) {
-      // Check if there is a previous state to restore
-      const previousState = previousTodos[previousTodos.length - 2]; // Retrieve the second last state
-      setTodos([...previousState]);
-      setPreviousTodos((prevTodos) => prevTodos.slice(0, prevTodos.length - 1)); // Remove the last state from the history
-      setHasChanges(true);
-    }
+    setPreviousTodos((prevTodos: ITodo[][]) => {
+      if (prevTodos.length > 1) {
+        // Check if there is a previous state to restore
+        const previousState = prevTodos[prevTodos.length - 2]; // Retrieve the second last state
+        setTodos([...previousState]);
+
+        // If there was only one change that got undone
+        if (prevTodos.length === 2) {
+          setHasChanges(false);
+        }
+
+        return prevTodos.slice(0, prevTodos.length - 1); // Remove the last state from the history
+      }
+
+      return prevTodos; // Return the previous state if no changes are made
+    });
   };
 
   const toggleTodo = (id: number): void => {
