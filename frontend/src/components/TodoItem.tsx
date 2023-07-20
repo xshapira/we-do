@@ -9,15 +9,15 @@ import { styled } from "styled-components";
 
 interface ITodoItemProps extends ITodo {
   toggleTodo: (id: number) => void;
-  editTodo: (id: number, name: string) => void;
+  editTodo: (id: number, title: string) => void;
   removeTodo: (id: number) => void;
 }
 
 export const TodoItem: FC<ITodoItemProps> = (props) => {
-  const { id, name, completed, toggleTodo, editTodo, removeTodo } = props;
+  const { id, title, completed, toggleTodo, editTodo, removeTodo } = props;
 
   const [isEditing, setIsEditing] = useState(false);
-  const [editedName, setEditedName] = useState(name);
+  const [editedName, setEditedName] = useState(title);
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setEditedName(event.target.value);
@@ -59,7 +59,7 @@ export const TodoItem: FC<ITodoItemProps> = (props) => {
           $isChecked={completed}
           onDoubleClick={() => setIsEditing(true)}
         >
-          {name}
+          {title}
         </TodoText>
       )}
 

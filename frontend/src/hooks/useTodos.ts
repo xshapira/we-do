@@ -1,16 +1,35 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ITodo } from "../types/todo";
 
 export const useTodos = () => {
   const [todos, setTodos] = useState<ITodo[]>([]);
   const [hasChanges, setHasChanges] = useState(false);
+  const [csrfToken, setCsrfToken] = useState<string | null>(null);
+
+  const fetchCsrfToken = async () => {
+    try {
+      const response = await fetch("/csrf/", {
+        credentials: "include",
+      });
+      const data = await response.json();
+      setCsrfToken(data.csrfToken);
+    } catch (error) {
+      console.log("Error fetching CSRF token:", error);
+    }
+  };
 
   const fetchTodos = async () => {
     try {
-      const response = await fetch("/tasks/todos/");
+      const response = await fetch("/todos/");
       if (response.ok) {
         const data = await response.json();
-        setTodos(data);
+        // Ensure that todos array contains valid todo objects with the id property
+        const updatedTodos = data.map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          completed: item.completed,
+        }));
+        setTodos(updatedTodos);
         setHasChanges(false);
       } else {
         throw new Error("Failed to fetch todos");
@@ -22,15 +41,24 @@ export const useTodos = () => {
 
   const addTodo = async (name: string): Promise<void> => {
     try {
-      const response = await fetch("/tasks/todos/create/", {
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+      if (csrfToken) {
+        headers["X-CSRFToken"] = csrfToken;
+      }
+      const response = await fetch("/todos/create/", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
         body: JSON.stringify({ title: name }),
       });
       const data = await response.json();
-      setTodos((prevTodos) => [...prevTodos, data]);
+      const newTodo: ITodo = {
+        id: data.id,
+        title: data.title, // Make sure the `data` object has the `title` property
+        completed: data.completed,
+      };
+      setTodos((prevTodos) => [...prevTodos, newTodo]);
       setHasChanges(true);
     } catch (error) {
       console.log("Error adding todo:", error);
@@ -44,11 +72,15 @@ export const useTodos = () => {
 
   const saveChanges = async () => {
     try {
-      const response = await fetch("/tasks/todos/", {
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+      if (csrfToken) {
+        headers["X-CSRFToken"] = csrfToken;
+      }
+      const response = await fetch("/todos/", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers,
         body: JSON.stringify(todos),
       });
       if (response.ok) {
@@ -117,6 +149,11 @@ export const useTodos = () => {
     );
     setHasChanges(true);
   };
+
+  useEffect(() => {
+    fetchCsrfToken();
+    fetchTodos();
+  }, []);
 
   return {
     todos,
