@@ -8,11 +8,9 @@ from tasks.models import TodoItem
 
 
 class TodoListView(View):
-    # def get(self, request):
-    #     todos = TodoItem.objects.values()
-    #     return JsonResponse(list(todos), safe=False)
-    def get_queryset(self):
-        return TodoItem.objects.filter(is_deleted=False)
+    def get(self, request):
+        todos = TodoItem.objects.values()
+        return JsonResponse(list(todos), safe=False)
 
 
 class TodoCreateView(View):
@@ -33,8 +31,7 @@ class TodoDeleteView(View):
     def delete(self, request, todo_id):
         try:
             todo = TodoItem.objects.get(id=todo_id)
-            todo.is_deleted = True
-            todo.save()
+            todo.delete()
             return JsonResponse({}, status=204)
         except TodoItem.DoesNotExist:
             return JsonResponse({"error": "Todo item does not exist"}, status=404)
@@ -63,20 +60,6 @@ class TodoUndoChangesView(View):
     def post(self, request):
         todos = TodoItem.objects.values()
         return JsonResponse(list(todos), safe=False)
-
-
-class TodoUndoDeleteView(View):
-    def put(self, request, todo_id):
-        try:
-            todo = TodoItem.objects.get(id=todo_id)
-            if todo.is_deleted:
-                todo.is_deleted = False
-                todo.save()
-                return JsonResponse({}, status=200)
-            else:
-                return JsonResponse({"error": "Todo item is not deleted"}, status=400)
-        except TodoItem.DoesNotExist:
-            return JsonResponse({"error": "Todo item does not exist"}, status=404)
 
 
 def csrf(request):
