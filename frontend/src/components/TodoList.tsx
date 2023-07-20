@@ -40,6 +40,8 @@ export const TodoList: FC = () => {
     removeCompleted,
     getItemsLeft,
     updateTodos,
+    hasChanges, // <-- Add hasChanges state from useTodos hook
+    undoChanges, // <-- Add undoChanges function from useTodos hook
   } = useTodos();
 
   const itemsLeft = getItemsLeft();
@@ -103,6 +105,14 @@ export const TodoList: FC = () => {
     inputRef.current?.focus();
   }, []);
 
+  const handleUndoChanges = async () => {
+    try {
+      await undoChanges();
+    } catch (error) {
+      console.log("Error undoing changes:", error);
+    }
+  };
+
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <Droppable droppableId="droppable">
@@ -157,6 +167,11 @@ export const TodoList: FC = () => {
               >
                 Clear Completed
               </ClearButton>
+              {hasChanges && (
+                <UndoButton variant="outlined" onClick={handleUndoChanges}>
+                  Undo Changes
+                </UndoButton>
+              )}
             </TodoFooter>
           </TodoListContainer>
         )}
