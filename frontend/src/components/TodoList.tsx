@@ -7,9 +7,9 @@ import {
 import * as React from "react";
 import { FC, useEffect, useMemo, useRef, useState } from "react";
 import { Filter, ITodo, absurd } from "../types/todo";
-import { Container } from "@mui/material";
+import { Container, Button } from "@mui/material";
 import { TodoItem } from "./TodoItem";
-import { styled } from "styled-components";
+import styled from "styled-components";
 import { useTodos } from "../hooks/useTodos";
 
 // Helper function to reorder todo items
@@ -33,7 +33,6 @@ export const TodoList: FC = () => {
 
   const {
     todos,
-    // <-- ensure you have a function to update todos state
     addTodo,
     toggleTodo,
     editTodo,
@@ -176,37 +175,10 @@ const TodoListContainer = styled(Container)`
   display: flex;
   flex-direction: column;
   height: 100%;
-`;
 
-const Input = styled.input`
-  width: 100%;
-  padding: 10px;
-  border: none;
-  margin-bottom: 10px;
-  height: 48px;
-  border-bottom: 1px solid ${(props) => props.theme.colors.primary};
-  background-color: ${(props) => props.theme.colors.secondary};
-`;
-
-const FilterButton = styled.button<{ $isActive: boolean }>`
-  background-color: transparent;
-  border: none;
-  padding: 10px 15px;
-  cursor: pointer;
-  margin-right: 10px;
-  font-size: 12px;
-
-  border: ${(props) =>
-    props.$isActive ? `1px solid ${props.theme.colors.primary}` : "none"};
-  border-radius: 10px;
-
-  &:last-child {
-    margin-right: 0;
-  }
-`;
-
-const FilterButtons = styled.div`
-  display: flex;
+  /* Add flex-grow and overflow properties */
+  flex-grow: 1;
+  overflow: auto;
 `;
 
 const TodoFooter = styled.div`
@@ -214,17 +186,80 @@ const TodoFooter = styled.div`
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  margin-top: 16px;
 
-  justify-self: end;
+  /* Add margin-top: auto to push the footer to the bottom */
   margin-top: auto;
 `;
 
-const ItemsLeft = styled.span`
-  font-size: 12px;
+const Input = styled.input`
+  width: 100%;
+  padding: 16px;
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  background-color: ${(props) => props.theme.colors.primary};
+  color: ${(props) => props.theme.colors.text}; /* Add text color */
+  margin-bottom: 16px;
 `;
 
-const ClearButton = styled(FilterButton)<{ $isVisible: boolean }>`
-  font-size: 12px;
-  background-color: transparent;
-  visibility: ${(props) => (props.$isVisible ? `visible` : "hidden")};
+const ItemsLeft = styled.span`
+  font-size: 14px;
+`;
+
+const FilterButtons = styled.div`
+  display: flex;
+  gap: 8px;
+`;
+
+const FilterButton = styled(Button)<{ $isActive: boolean }>`
+  && {
+    background-color: transparent;
+    color: ${(props) => (props.$isActive ? "orange" : props.theme.colors.text)};
+    border: ${(props) => (props.$isActive ? `1px solid orange` : "none")};
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 14px;
+    text-transform: capitalize;
+    &:hover {
+      background-color: ${(props) => props.theme.colors.primary};
+      color: ${(props) => props.theme.colors.background};
+    }
+  }
+`;
+
+const ClearButton = styled(Button)<{ $isActive: boolean; $isVisible: boolean }>`
+  && {
+    background-color: ${(props) =>
+      props.$isActive ? props.theme.colors.primary : "transparent"};
+    color: ${(props) =>
+      props.$isActive
+        ? props.theme.colors.background
+        : props.theme.colors.text};
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 14px;
+    text-transform: capitalize;
+    display: ${(props) => (props.$isVisible ? "block" : "none")};
+    &:hover {
+      background-color: ${(props) => props.theme.colors.primary};
+      color: ${(props) => props.theme.colors.background};
+    }
+  }
+`;
+
+const UndoButton = styled(Button)`
+  && {
+    background-color: ${(props) => props.theme.colors.primary};
+    color: ${(props) => props.theme.colors.background};
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 14px;
+    text-transform: capitalize;
+    margin-left: 8px;
+    &:hover {
+      background-color: ${(props) => props.theme.colors.primary};
+    }
+  }
 `;
