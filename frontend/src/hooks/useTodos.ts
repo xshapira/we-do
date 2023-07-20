@@ -4,13 +4,34 @@ import { ITodo } from "../types/todo";
 export const useTodos = () => {
   const [todos, setTodos] = useState<ITodo[]>([]);
 
-  const addTodo = (name: string): void => {
-    const newTodo: ITodo = {
-      id: Date.now(),
-      name,
-      completed: false,
-    };
-    setTodos((prevState: ITodo[]) => [...prevState, newTodo]);
+  useEffect(() => {
+    fetchTodos();
+  }, []);
+
+  const fetchTodos = async () => {
+    try {
+      const response = await fetch("/tasks/todos/");
+      const data = await response.json();
+      setTodos(data);
+    } catch (error) {
+      console.log("Error fetching todos:", error);
+    }
+  };
+
+  const addTodo = async (name: string): Promise<void> => {
+    try {
+      const response = await fetch("/tasks/todos/create/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ title: name }),
+      });
+      const data = await response.json();
+      setTodos((prevTodos) => [...prevTodos, data]);
+    } catch (error) {
+      console.log("Error adding todo:", error);
+    }
   };
 
   const toggleTodo = (id: number): void => {
