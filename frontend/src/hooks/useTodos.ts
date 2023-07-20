@@ -3,16 +3,18 @@ import { ITodo } from "../types/todo";
 
 export const useTodos = () => {
   const [todos, setTodos] = useState<ITodo[]>([]);
-
-  useEffect(() => {
-    fetchTodos();
-  }, []);
+  const [hasChanges, setHasChanges] = useState(false);
 
   const fetchTodos = async () => {
     try {
       const response = await fetch("/tasks/todos/");
-      const data = await response.json();
-      setTodos(data);
+      if (response.ok) {
+        const data = await response.json();
+        setTodos(data);
+        setHasChanges(false);
+      } else {
+        throw new Error("Failed to fetch todos");
+      }
     } catch (error) {
       console.log("Error fetching todos:", error);
     }
@@ -29,17 +31,38 @@ export const useTodos = () => {
       });
       const data = await response.json();
       setTodos((prevTodos) => [...prevTodos, data]);
+      setHasChanges(true);
     } catch (error) {
       console.log("Error adding todo:", error);
     }
   };
 
-  const discardChanges = async (): Promise<void> => {
+  const updateTodos = (newTodos: ITodo[]) => {
+    setTodos(newTodos);
+    setHasChanges(true);
+  };
+
+  const saveChanges = async () => {
     try {
-      fetchTodos();
+      const response = await fetch("/tasks/todos/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(todos),
+      });
+      if (response.ok) {
+        setHasChanges(false);
+      } else {
+        throw new Error("Failed to save changes");
+      }
     } catch (error) {
-      console.log("Error discarding changes:", error);
+      console.log("Error saving changes:", error);
     }
+  };
+
+  const undoChanges = () => {
+    fetchTodos();
   };
 
   const toggleTodo = (id: number): void => {
@@ -54,6 +77,7 @@ export const useTodos = () => {
         return todo;
       })
     );
+    setHasChanges(true);
   };
 
   const editTodo = (id: number, name: string): void => {
@@ -68,12 +92,14 @@ export const useTodos = () => {
         return todo;
       });
     });
+    setHasChanges(true);
   };
 
   const removeTodo = (id: number): void => {
     setTodos((prevState: ITodo[]) =>
       prevState.filter((todo: ITodo) => todo.id !== id)
     );
+    setHasChanges(true);
   };
 
   const getItemsLeft = (): number => {
@@ -89,21 +115,20 @@ export const useTodos = () => {
     setTodos((prevState: ITodo[]) =>
       prevState.filter((todo: ITodo) => !todo.completed)
     );
-  };
-
-  const updateTodos = (newTodos: ITodo[]): void => {
-    setTodos(newTodos);
+    setHasChanges(true);
   };
 
   return {
     todos,
     addTodo,
-    discardChanges,
+    updateTodos,
+    saveChanges,
+    undoChanges,
+    hasChanges,
     toggleTodo,
     editTodo,
     removeTodo,
     getItemsLeft,
     removeCompleted,
-    updateTodos,
   };
 };
