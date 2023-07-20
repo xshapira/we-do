@@ -34,6 +34,14 @@ export const useTodos = () => {
     }
   };
 
+  const discardChanges = async (): Promise<void> => {
+    try {
+      fetchTodos();
+    } catch (error) {
+      console.log("Error discarding changes:", error);
+    }
+  };
+
   const toggleTodo = (id: number): void => {
     setTodos((prevState: ITodo[]) =>
       prevState.map((todo: ITodo) => {
@@ -90,6 +98,7 @@ export const useTodos = () => {
   return {
     todos,
     addTodo,
+    discardChanges,
     toggleTodo,
     editTodo,
     removeTodo,
