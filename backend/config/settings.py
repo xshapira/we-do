@@ -12,7 +12,7 @@ from decouple import Config, RepositoryEnv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parents[1]
 
-# DOTENV_FILE = str(BASE_DIR / "../.env")
+
 DOTENV_FILE = str(BASE_DIR.parent / ".env")
 config = Config(RepositoryEnv(DOTENV_FILE))
 
@@ -43,7 +43,9 @@ DJANGO_APPS = [
 
 THIRD_PARTY_APPS = []
 
-PROJECT_APPS = []
+PROJECT_APPS = [
+    "tasks.apps.TasksConfig",
+]
 
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + PROJECT_APPS
