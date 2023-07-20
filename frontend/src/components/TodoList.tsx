@@ -68,9 +68,9 @@ export const TodoList: FC = () => {
       todos.filter((todo) => {
         switch (filter) {
           case Filter.active:
-            return !todo.completed;
+            return !todo.completed && !todo.is_deleted;
           case Filter.completed:
-            return todo.completed;
+            return todo.completed && !todo.is_deleted;
           default:
             return absurd(filter);
         }
@@ -155,6 +155,7 @@ export const TodoList: FC = () => {
                         id={todo.id}
                         title={todo.title} // Use `title` instead of `name`
                         completed={todo.completed}
+                        is_deleted={todo.is_deleted}
                       />
                     </div>
                   )}

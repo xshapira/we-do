@@ -11,6 +11,7 @@ interface ITodoItemProps extends ITodo {
   toggleTodo: (id: number) => void;
   editTodo: (id: number, title: string) => void;
   removeTodo: (id: number) => void;
+  is_deleted: boolean;
 }
 
 export const TodoItem: FC<ITodoItemProps> = (props) => {

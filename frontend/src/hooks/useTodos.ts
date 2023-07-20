@@ -23,13 +23,16 @@ export const useTodos = () => {
       const response = await fetch("/todos/");
       if (response.ok) {
         const data = await response.json();
+        // Filter out the deleted todo items
+        const updatedTodos = data.filter((item: any) => !item.is_deleted);
+
         // Ensure that todos array contains valid todo objects with the id property
-        const updatedTodos = data.map((item: any) => ({
+        const mappedTodos = updatedTodos.map((item: any) => ({
           id: item.id,
           title: item.title,
           completed: item.completed,
         }));
-        setTodos(updatedTodos);
+        setTodos(mappedTodos);
         setHasChanges(false);
       } else {
         throw new Error("Failed to fetch todos");
@@ -53,13 +56,19 @@ export const useTodos = () => {
         body: JSON.stringify({ title: name }),
       });
       const data = await response.json();
-      const newTodo: ITodo = {
-        id: data.id,
-        title: data.title, // Make sure the `data` object has the `title` property
-        completed: data.completed,
-      };
-      setTodos((prevTodos) => [...prevTodos, newTodo]);
-      setHasChanges(true);
+
+      if (data.id && data.title && typeof data.completed === "boolean") {
+        const newTodo: ITodo = {
+          id: data.id,
+          title: data.title,
+          completed: data.completed,
+          is_deleted: false,
+        };
+        setTodos((prevTodos) => [...prevTodos, newTodo]);
+        setHasChanges(true);
+      } else {
+        throw new Error("Invalid server response");
+      }
     } catch (error) {
       console.log("Error adding todo:", error);
     }
@@ -129,7 +138,15 @@ export const useTodos = () => {
 
   const removeTodo = (id: number): void => {
     setTodos((prevState: ITodo[]) =>
-      prevState.filter((todo: ITodo) => todo.id !== id)
+      prevState.map((todo: ITodo) => {
+        if (todo.id === id) {
+          return {
+            ...todo,
+            is_deleted: true,
+          };
+        }
+        return todo;
+      })
     );
     setHasChanges(true);
   };
@@ -145,7 +162,15 @@ export const useTodos = () => {
 
   const removeCompleted = (): void => {
     setTodos((prevState: ITodo[]) =>
-      prevState.filter((todo: ITodo) => !todo.completed)
+      prevState.map((todo: ITodo) => {
+        if (todo.completed) {
+          return {
+            ...todo,
+            is_deleted: true,
+          };
+        }
+        return todo;
+      })
     );
     setHasChanges(true);
   };

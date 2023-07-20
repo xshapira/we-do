@@ -2,6 +2,7 @@ export interface ITodo {
   id: number;
   title: string;
   completed: boolean;
+  is_deleted: boolean;
 }
 
 export enum Filter {

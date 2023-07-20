@@ -9,7 +9,7 @@ from tasks.models import TodoItem
 
 class TodoListView(View):
     def get(self, request):
-        todos = TodoItem.objects.values()
+        todos = TodoItem.objects.filter(is_deleted=False)
         return JsonResponse(list(todos), safe=False)
 
 
@@ -31,7 +31,8 @@ class TodoDeleteView(View):
     def delete(self, request, todo_id):
         try:
             todo = TodoItem.objects.get(id=todo_id)
-            todo.delete()
+            todo.is_deleted = True
+            todo.save()
             return JsonResponse({}, status=204)
         except TodoItem.DoesNotExist:
             return JsonResponse({"error": "Todo item does not exist"}, status=404)
