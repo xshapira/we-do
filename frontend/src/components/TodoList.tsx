@@ -12,7 +12,7 @@ export const TodoList: FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [value, setValue] = useState("");
-  const [filter, setFilter] = useState<Filter>(Filter.all);
+  const [filter, setFilter] = useState<Filter>(Filter.active);
 
   const {
     todos,
