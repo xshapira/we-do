@@ -4,7 +4,7 @@ import { DefaultTheme } from "styled-components";
 
 export const baseTheme: ITheme = {
   colors: {
-    primary: "#659FFF",
+    primary: "#E6844F",
     secondary: "#2b2b2b",
     success: "#14BE96",
     danger: "#E84D59",
