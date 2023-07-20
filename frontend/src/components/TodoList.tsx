@@ -166,6 +166,7 @@ export const TodoList: FC = () => {
               <ItemsLeft>{itemsLeft} item(s) left</ItemsLeft>
               <FilterButtons>{filterButtons}</FilterButtons>
               <ClearButton
+                variant="outlined"
                 $isActive={false}
                 $isVisible={filter === Filter.active ? false : true}
                 onClick={removeCompleted}
@@ -233,53 +234,42 @@ const FilterButtons = styled.div`
   gap: 8px;
 `;
 
-const FilterButton = styled(Button)<{ $isActive: boolean }>`
+const BaseButton = styled(Button)`
   && {
+    color: ${(props) => props.theme.colors.text};
+    border-radius: 4px;
+    padding: 4px 8px;
+    font-size: 14px;
+    text-transform: capitalize;
     background-color: transparent;
-    color: ${(props) => (props.$isActive ? "orange" : props.theme.colors.text)};
-    border: ${(props) => (props.$isActive ? `1px solid orange` : "none")};
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 14px;
-    text-transform: capitalize;
+
     &:hover {
-      background-color: ${(props) => props.theme.colors.primary};
+      background-color: ${(props) => props.theme.colors.secondary};
       color: ${(props) => props.theme.colors.background};
     }
   }
 `;
 
-const ClearButton = styled(Button)<{ $isActive: boolean; $isVisible: boolean }>`
+const FilterButton = styled(BaseButton)<{ $isActive: boolean }>`
   && {
-    background-color: ${(props) =>
-      props.$isActive ? props.theme.colors.primary : "transparent"};
+    color: ${(props) => (props.$isActive ? "" : props.theme.colors.text)};
+    border: ${(props) => (props.$isActive ? "" : "none")};
+  }
+`;
+
+const ClearButton = styled(BaseButton)<{
+  $isActive: boolean;
+  $isVisible: boolean;
+}>`
+  && {
     color: ${(props) =>
-      props.$isActive
-        ? props.theme.colors.background
-        : props.theme.colors.text};
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 14px;
-    text-transform: capitalize;
+      props.$isActive ? "blue" : props.theme.colors.inherit};
     display: ${(props) => (props.$isVisible ? "block" : "none")};
-    &:hover {
-      background-color: ${(props) => props.theme.colors.primary};
-      color: ${(props) => props.theme.colors.background};
-    }
   }
 `;
 
-const UndoButton = styled(Button)`
+const UndoButton = styled(BaseButton)`
   && {
-    background-color: ${(props) => props.theme.colors.primary};
-    color: ${(props) => props.theme.colors.background};
-    border-radius: 4px;
-    padding: 4px 8px;
-    font-size: 14px;
-    text-transform: capitalize;
     margin-left: 8px;
-    &:hover {
-      background-color: ${(props) => props.theme.colors.primary};
-    }
   }
 `;
