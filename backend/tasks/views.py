@@ -1,3 +1,5 @@
+import json
+
 from django.http import JsonResponse
 from django.views import View
 
@@ -12,7 +14,8 @@ class TodoListView(View):
 
 class TodoCreateView(View):
     def post(self, request):
-        if title := request.POST.get("title"):
+        data = json.loads(request.body)
+        if title := data.get("title"):
             todo = TodoItem.objects.create(title=title, completed=False)
             return JsonResponse(
                 {"id": todo.id, "title": todo.title, "completed": todo.completed},
@@ -25,14 +28,18 @@ class TodoCreateView(View):
 
 class TodoDeleteView(View):
     def delete(self, request, todo_id):
-        todo = TodoItem.objects.get(id=todo_id)
-        todo.delete()
-        return JsonResponse({}, status=204)
+        try:
+            todo = TodoItem.objects.get(id=todo_id)
+            todo.delete()
+            return JsonResponse({}, status=204)
+        except TodoItem.DoesNotExist:
+            return JsonResponse({"error": "Todo item does not exist"}, status=404)
 
 
 class TodoUpdateView(View):
     def put(self, request, todo_id):
-        if title := request.POST.get("title"):
+        data = json.loads(request.body)
+        if title := data.get("title"):
             try:
                 todo = TodoItem.objects.get(id=todo_id)
                 todo.title = title
