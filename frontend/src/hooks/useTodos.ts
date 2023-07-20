@@ -5,6 +5,7 @@ export const useTodos = () => {
   const [todos, setTodos] = useState<ITodo[]>([]);
   const [hasChanges, setHasChanges] = useState(false);
   const [csrfToken, setCsrfToken] = useState<string | null>(null);
+  const [previousTodos, setPreviousTodos] = useState<ITodo[][]>([]);
 
   const fetchCsrfToken = async () => {
     try {
@@ -32,8 +33,13 @@ export const useTodos = () => {
           title: item.title,
           completed: item.completed,
         }));
+
         setTodos(mappedTodos);
         setHasChanges(false);
+
+        // Save the previous todos state
+        // Save the previous todos state
+        setPreviousTodos((prevTodos) => [...prevTodos, mappedTodos]);
       } else {
         throw new Error("Failed to fetch todos");
       }
@@ -103,7 +109,13 @@ export const useTodos = () => {
   };
 
   const undoChanges = () => {
-    fetchTodos();
+    if (previousTodos.length > 1) {
+      // Check if there is a previous state to restore
+      const previousState = previousTodos[previousTodos.length - 2]; // Retrieve the second last state
+      setTodos([...previousState]);
+      setPreviousTodos((prevTodos) => prevTodos.slice(0, prevTodos.length - 1)); // Remove the last state from the history
+      setHasChanges(true);
+    }
   };
 
   const toggleTodo = (id: number): void => {
@@ -127,7 +139,7 @@ export const useTodos = () => {
         if (todo.id === id) {
           return {
             ...todo,
-            name,
+            title: name, // Update the title property instead of name
           };
         }
         return todo;
