@@ -38,10 +38,17 @@ class TodoUpdateView(View):
                 todo.title = title
                 todo.save()
                 return JsonResponse(
-                    {"id": todo.id, "title": todo.title, "completed": todo}, status=200
+                    {"id": todo.id, "title": todo.title, "completed": todo.completed},
+                    status=200,
                 )
             except TodoItem.DoesNotExist:
                 return JsonResponse({"error": "Todo item does not exist"}, status=404)
         return JsonResponse(
             {"error": "Please provide a title for the to-do item"}, status=400
         )
+
+
+class TodoUndoChangesView(View):
+    def post(self, request):
+        todos = TodoItem.objects.values()
+        return JsonResponse(list(todos), safe=False)
