@@ -5,6 +5,7 @@ from tasks.views import (
     TodoDeleteView,
     TodoListView,
     TodoUndoChangesView,
+    TodoUndoDeleteView,
     TodoUpdateView,
 )
 
@@ -14,6 +15,7 @@ urlpatterns = [
     path("todos/", TodoListView.as_view()),
     path("todos/create/", TodoCreateView.as_view()),
     path("todos/<int:todo_id>/delete/", TodoDeleteView.as_view()),
+    path("todos/<int:todo_id>/undo-delete/", TodoUndoDeleteView.as_view()),
     path("todos/<int:todo_id>/update/", TodoUpdateView.as_view()),
     path("todos/undo-changes/", TodoUndoChangesView.as_view()),
 ]
