@@ -51,8 +51,6 @@ export const TodoList: FC = () => {
             return !todo.completed;
           case Filter.completed:
             return todo.completed;
-          case Filter.all:
-            return true;
           default:
             return absurd(filter);
         }
