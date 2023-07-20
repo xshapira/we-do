@@ -133,8 +133,8 @@ export const TodoList: FC = () => {
             {filteredTodos &&
               filteredTodos.map((todo: ITodo, index: number) => (
                 <Draggable
-                  key={todo.id}
-                  draggableId={todo.id.toString()}
+                  key={todo?.id?.toString() || index.toString()}
+                  draggableId={todo?.id?.toString() || index.toString()}
                   index={index}
                 >
                   {(provided) => (
