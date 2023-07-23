@@ -10,7 +10,11 @@ from tasks.models import TodoItem
 class TodoListView(View):
     def get(self, request):
         todos = TodoItem.objects.filter(is_deleted=False)
-        return JsonResponse(list(todos), safe=False)
+        list_of_todos = [
+            {"id": todo.id, "title": todo.title, "completed": todo.completed}
+            for todo in todos
+        ]
+        return JsonResponse(list_of_todos, safe=False)
 
 
 class TodoCreateView(View):
