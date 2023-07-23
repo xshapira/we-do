@@ -30,5 +30,9 @@ RUN apt-get -y install git && apt-get -y install eslint
 # once git is installed, set user to node to comply with git repo security
 USER node
 
+# Build the frontend
+COPY --chown=node:node ./frontend ./
+RUN pnpm run build
+
 # vite start
 CMD ["pnpm", "run", "dev", "--host"]
