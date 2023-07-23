@@ -66,7 +66,7 @@ MIDDLEWARE = [
 ROOT_URLCONF = "config.urls"
 
 # TEMPLATES_DIR = str(BASE_DIR.parent / "frontend" / ".next" / "server" / "app")
-TEMPLATES_DIR = str(BASE_DIR.parent / "frontend" / "dist")
+TEMPLATES_DIR = str(BASE_DIR.parent / "dist")
 
 TEMPLATES = [
     {
@@ -138,7 +138,7 @@ USE_TZ = True
 # STATIC_URL = "/_next/static/"
 # STATICFILES_DIRS = [str(BASE_DIR.parent / "frontend" / ".next" / "static")]
 STATIC_URL = "/assets/"
-STATICFILES_DIRS = [str(BASE_DIR.parent / "frontend" / "dist" / "assets")]
+STATICFILES_DIRS = [str(BASE_DIR.parent / "dist" / "assets")]
 
 
 # See: https://docs.djangoproject.com/en/dev/ref/contrib/staticfiles/#staticfiles-finders
