@@ -1,0 +1,52 @@
+version: '3.8'
+
+volumes:
+  postgres-data: {}
+  postgres-data-backups: {}
+  static-files:
+
+services:
+  postgres:
+    build:
+      context: .
+      dockerfile: ./docker/postgres/Dockerfile
+    image: wedo-app-postgres-data
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - postgres-data-backups:/backups
+    env_file:
+      - ./.env
+    restart: unless-stopped
+
+  django:
+    build:
+      context: .
+      dockerfile: ./docker/django/Dockerfile
+    image: wedo-backend
+    volumes:
+      - ./backend/:/usr/src/app/backend
+      - ./docker/:/usr/src/app/docker
+      - static-files:/usr/src/app/dist
+      - ./.env:/usr/src/app/.env
+    command: /usr/src/app/docker/django/start_dev
+    ports:
+      - 8000:8000
+    env_file:
+      - ./.env
+    depends_on:
+      - postgres
+      - node
+    restart: unless-stopped
+
+  node:
+    build:
+      context: .
+      dockerfile: ./docker/node/Dockerfile
+    image: wedo-frontend
+    volumes:
+      - ./frontend/:/usr/src/app/frontend
+      - /usr/src/app/frontend/node_modules
+      - static-files:/usr/src/app/frontend/dist
+    ports:
+      - '5173:5173'
+    restart: unless-stopped
