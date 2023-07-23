@@ -1,65 +1,20 @@
 Getting Started with the Project
 ----------------------------------
 
-To install and run the Project, follow these steps:
+To run the project, follow these steps:
 
-**Frontend Installation**:
-
-Navigate to the frontend directory:
+Build and run the Docker containers using docker-compose.
 
 ```bash
-cd frontend
+docker-compose up --build
 ```
 
-Install the necessary packages using pnpm:
+Docker will now pull the necessary images, build the backend and frontend containers, and start the application.
+
+**Accessing the Backend**:
+
+Once the containers are up and running, the backend server will be accessible at:
 
 ```bash
-pnpm install
+http://0.0.0.0:8000/
 ```
-
-Build the project:
-
-```bash
-pnpm run build
-```
-
-**Environment Setup**:
-
-Rename the .example.env file to .env.
-
-```bash
-mv .example.env .env
-```
-
-**Backend Installation**:
-
-Navigate to the backend directory:
-
-```bash
-cd ../backend
-```
-
-Install the necessary Python packages using Poetry:
-
-```bash
-poetry install
-```
-
-**Database Setup**:
-
-Make migrations and migrate the database:
-
-```bash
-python manage.py makemigrations
-python manage.py migrate
-```
-
-**Run the Server**:
-
-Run the Django server:
-
-```bash
-python manage.py runserver
-```
-
-At this point, the backend server should be running at [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
